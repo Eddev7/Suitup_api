@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: suitup
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - suitup_network
+
+  api:
+    image: suitup_api
+    container_name: suitup_api_container
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://admin:12345@db:5432/suitup
+    ports:
+      - "3000:3000"
+    networks:
+      - suitup_network
+
+volumes:
+  db_data:
+
+networks:
+  suitup_network:
+    driver: bridge
